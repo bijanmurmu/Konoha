@@ -1,0 +1,14 @@
+# Security
+.env
+keep_alive.pyc
+__pycache__/
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+venv/
+env/
+Lib/
+Scripts/
+get-pip.py
