@@ -22,8 +22,9 @@ class Leveling(commands.Cog):
             json.dump(self.data, f, indent=4)
 
     def get_level(self, xp):
-        # Calculation: Level up requires increasingly more XP
-        return int(xp ** (1/1.5))
+        # Proper RPG Leveling Curve: Level = 0.1 * sqrt(XP)
+        # At 20 XP per msg: Level 1 requires 100 XP (5 msgs), Level 2 requires 400 XP (20 msgs).
+        return int(0.1 * (xp ** 0.5))
 
     @commands.Cog.listener()
     async def on_message(self, message):
