@@ -21,14 +21,16 @@ class Automod(commands.Cog):
         # Anti-Link System
         if self.link_regex.search(message.content):
             await message.delete()
-            await message.channel.send(f"⚠️ {message.author.mention}, unauthorized links are blocked by Konoha Shield!", delete_after=5)
+            embed = discord.Embed(title="SECURITY ALERT", description=f"{message.author.mention} attempted to inject an unauthorized network link.\n\n**Action Taken:** Data Purged.", color=0xff1e1e)
+            await message.channel.send(embed=embed, delete_after=8)
             return
 
         # Anti-Badword / Anti-Scam System
         content_lower = message.content.lower()
         if any(word in content_lower for word in self.banned_words):
             await message.delete()
-            await message.channel.send(f"🚨 {message.author.mention}, that phrase is flagged by Konoha Automod.", delete_after=5)
+            embed = discord.Embed(title="SECURITY ALERT", description=f"{message.author.mention} utilized a restricted protocol phrase.\n\n**Action Taken:** Data Purged.", color=0xff1e1e)
+            await message.channel.send(embed=embed, delete_after=8)
             return
 
 async def setup(bot):

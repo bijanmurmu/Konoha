@@ -9,7 +9,7 @@ def home():
 
 def run():
     # Render assigns a dynamic port, so we listen to 0.0.0.0
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=0)
 
 def keep_alive():
     t = Thread(target=run)

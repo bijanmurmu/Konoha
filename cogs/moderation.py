@@ -23,14 +23,50 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             await interaction.response.send_message("❌ I do not have permission to kick that member. Make sure my role is higher!", ephemeral=True)
 
-    @app_commands.command(name='ban', description='Permanently bans a member from the server.')
+    @app_commands.command(name='ban', description='Surgically excise a target from the server.')
     @app_commands.checks.has_permissions(ban_members=True)
-    async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = None):
+    async def ban(self, interaction: discord.Interaction, member: discord.Member, reason: str = "Protocol: Zero Tolerance."):
         try:
             await member.ban(reason=reason)
-            await interaction.response.send_message(f'🔨 **{member.name}** has been permanently banned. Reason: *{reason}*')
+            embed = discord.Embed(
+                title="TARGET ELIMINATED",
+                description=f"{member.mention} permanently excised from the network.\n\n**Protocol:** {reason}",
+                color=0xff1e1e
+            )
+            await interaction.response.send_message(embed=embed)
         except discord.Forbidden:
-            await interaction.response.send_message("❌ I do not have permission to ban that member. Make sure my role is higher!", ephemeral=True)
+            await interaction.response.send_message("> ERROR: INSUFFICIENT PERMISSIONS TO ELIMINATE TARGET.", ephemeral=True)
+
+    @app_commands.command(name='unban', description='Restore network access to a target.')
+    @app_commands.checks.has_permissions(ban_members=True)
+    async def unban(self, interaction: discord.Interaction, user_id: str):
+        try:
+            user = await self.bot.fetch_user(int(user_id))
+            await interaction.guild.unban(user)
+            embed = discord.Embed(title="ACCESS RESTORED", description=f"> SYSTEM OVERRIDE.\n\n**Target:** {user.mention} has been unbanned.", color=0x00ff00)
+            await interaction.response.send_message(embed=embed)
+        except:
+            await interaction.response.send_message("> ERROR: TARGET NOT FOUND IN BAN DATABASE.", ephemeral=True)
+
+    @app_commands.command(name='timeout', description='Temporarily suspend a target from communicating.')
+    @app_commands.checks.has_permissions(moderate_members=True)
+    async def timeout(self, interaction: discord.Interaction, member: discord.Member, minutes: int, reason: str = "Protocol breach."):
+        import datetime
+        if member == interaction.user or member.guild_permissions.administrator:
+            await interaction.response.send_message("> ERROR: INVALID TARGET FOR TIMEOUT.", ephemeral=True)
+            return
+            
+        duration = datetime.timedelta(minutes=minutes)
+        try:
+            await member.timeout(duration, reason=reason)
+            embed = discord.Embed(
+                title="TARGET SILENCED",
+                description=f"> COMMUNICATION PROTOCOLS SUSPENDED.\n\n**Target:** {member.mention}\n**Duration:** {minutes} minutes\n**Reason:** {reason}",
+                color=0xffa500
+            )
+            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            await interaction.response.send_message(f"> ERROR: {str(e)}", ephemeral=True)
 
     @app_commands.command(name='tempban', description='Temporarily bans a member. Format: 10m, 2h, 1d')
     @app_commands.checks.has_permissions(ban_members=True)

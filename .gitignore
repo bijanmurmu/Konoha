@@ -12,3 +12,4 @@ env/
 Lib/
 Scripts/
 get-pip.py
+*.json

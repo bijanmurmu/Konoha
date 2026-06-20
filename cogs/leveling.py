@@ -50,7 +50,7 @@ class Leveling(commands.Cog):
         
         if new_level > current_level:
             self.data[guild_id][user_id]['level'] = new_level
-            await message.channel.send(f"🎉 Congrats {message.author.mention}, you just advanced to **Level {new_level}**!")
+            await message.channel.send(f"> AUTHORITY ESCALATED: {message.author.mention} REACHED SECURITY CLEARANCE **LEVEL {new_level}**.")
             
         self.save_data()
 
@@ -62,9 +62,9 @@ class Leveling(commands.Cog):
         
         if guild_id in self.data and user_id in self.data[guild_id]:
             stats = self.data[guild_id][user_id]
-            embed = discord.Embed(title=f"Rank: {member.name}", color=discord.Color.blue())
-            embed.add_field(name="Level", value=stats['level'], inline=True)
-            embed.add_field(name="Total XP", value=stats['xp'], inline=True)
+            embed = discord.Embed(title=f"CLEARANCE PROTOCOL: {member.name.upper()}", color=0xff1e1e)
+            embed.add_field(name="Clearance Level", value=f"LEVEL {stats['level']}", inline=True)
+            embed.add_field(name="Data Uploaded", value=f"{stats['xp']} XP", inline=True)
             
             if member.avatar:
                 embed.set_thumbnail(url=member.avatar.url)
@@ -73,7 +73,29 @@ class Leveling(commands.Cog):
                 
             await interaction.response.send_message(embed=embed)
         else:
-            await interaction.response.send_message(f"❌ {member.name} has no XP yet! Send some messages to level up.", ephemeral=True)
+            await interaction.response.send_message(f"> ERROR: {member.name.upper()} HAS NO NETWORK FOOTPRINT.", ephemeral=True)
+
+    @app_commands.command(name='leaderboard_xp', description='Display the top 10 highest clearance levels.')
+    async def leaderboard_xp(self, interaction: discord.Interaction):
+        guild_id = str(interaction.guild.id)
+        if guild_id not in self.data:
+            await interaction.response.send_message("> ERROR: NO NETWORK DATA FOR THIS SECTOR.", ephemeral=True)
+            return
+            
+        sorted_users = sorted(
+            self.data[guild_id].items(),
+            key=lambda x: x[1].get('xp', 0),
+            reverse=True
+        )[:10]
+        
+        embed = discord.Embed(title="CLEARANCE LEADERBOARD", color=0xff1e1e)
+        
+        desc = ""
+        for i, (user_id, stats) in enumerate(sorted_users, 1):
+            desc += f"**{i}.** <@{user_id}> - Level {stats.get('level', 0)} ({stats.get('xp', 0)} XP)\n"
+            
+        embed.description = desc or "> ERROR: NO CLEARANCE DATA FOUND."
+        await interaction.response.send_message(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(Leveling(bot))

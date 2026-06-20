@@ -11,10 +11,10 @@ class RoleButton(discord.ui.Button):
         # We must respond immediately or Discord shows "Interaction Failed"
         if self.role in interaction.user.roles:
             await interaction.user.remove_roles(self.role)
-            await interaction.response.send_message(f"Removed the **{self.role.name}** role.", ephemeral=True)
+            await interaction.response.send_message(f"> ACCESS REVOKED: **{self.role.name}**", ephemeral=True)
         else:
             await interaction.user.add_roles(self.role)
-            await interaction.response.send_message(f"Given the **{self.role.name}** role.", ephemeral=True)
+            await interaction.response.send_message(f"> ACCESS GRANTED: **{self.role.name}**", ephemeral=True)
 
 class RoleView(discord.ui.View):
     def __init__(self, roles):
@@ -33,9 +33,9 @@ class Roles(commands.Cog):
         roles = [r for r in [role1, role2, role3] if r is not None]
         
         embed = discord.Embed(
-            title="🎭 Select Your Roles", 
-            description="Click the buttons below to assign or remove roles from yourself!",
-            color=discord.Color.from_rgb(226, 253, 82)
+            title="SYSTEM ACCESS PROTOCOLS", 
+            description="Initialize your network clearance by selecting your protocols below.",
+            color=0xff1e1e
         )
         
         view = RoleView(roles)
